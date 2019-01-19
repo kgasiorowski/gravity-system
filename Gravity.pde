@@ -103,14 +103,9 @@ class StaticParticle extends Particle{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class DynamicParticle extends Particle{
     
-    final PVector airResistance;
-    final PVector maxVelocity = new PVector(10, 10);
-    
     DynamicParticle(int x, int y){
     
         super(x, y, color(255));
-        
-        airResistance = new PVector(0, 0);
     
     }
 
@@ -138,15 +133,14 @@ class DynamicParticle extends Particle{
         // Air resistance
         //accel.add(new PVector(vel.x * -0.01, vel.y * -0.01));
     
+        // All forces should be applied before this call
         vel.add(accel);
         vel.limit(10);
         
         pos.add(vel);
         
-        int blue = int(map(vel.mag(), 0, 10, 255, 0));
-        int red = int(map(vel.mag(), 0, 10, 0, 255));
-        
-        clr = color(red, 0, blue);
+        // Recolor the particle as a function of it's velocity
+        clr = color(int(map(vel.mag(), 0, 10, 0, 255)), 0, int(map(vel.mag(), 0, 10, 255, 0)));
         
     }
 
