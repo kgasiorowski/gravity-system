@@ -5,21 +5,17 @@ import java.awt.event.KeyEvent;
 
 color BACKGROUND_COLOR = color(0);
 final ArrayList<Drawable> particles = new ArrayList();
-final ArrayList<GravityWell> wells = new ArrayList();
 final float CIRCLE_RADIUS = 3.5;
 final float CIRCLE_DIAM = CIRCLE_RADIUS * 2;
-GravityWell grav;
 
 void setup(){
 
     size(920, 800);
-    //fullScreen();
     ControlP5 cp5 = new ControlP5(this);
     cp5.addFrameRate().setPosition(10, 10);
     noStroke();
     
-    grav = new GravityWell(width/2, height/2, 10);
-    wells.add(grav);
+    GravityWell grav = new GravityWell(width/2, height/2, 10);
     particles.add(grav);
     
 }
@@ -123,8 +119,13 @@ class DynamicParticle extends Particle{
         //First calculate acceleration vector, then add it
         PVector accel = new PVector(0, 0);
         
-        for(GravityWell g : wells){
+        for(Drawable d : particles){
         
+            if(!(d instanceof GravityWell))
+                continue;
+            
+            GravityWell g = (GravityWell)d;
+            
             float dist = pos.dist(g.pos);
             PVector t = new PVector(g.pos.x - pos.x, g.pos.y - pos.y);
             
