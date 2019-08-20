@@ -9,13 +9,13 @@ final float CIRCLE_RADIUS = 3.5;
 final float CIRCLE_DIAM = CIRCLE_RADIUS * 2;
 final float G = 3;
 
+final float MAX_VEL = 10;
+
 boolean VEL_ARROWS = false;
 final float VEL_ARROW_MULT = 7;
 
 boolean ACCL_ARROWS = false;
 final float ACCL_ARROW_MULT = 400;
-
-//GravityWell grav;
 
 void setup(){
 
@@ -24,19 +24,48 @@ void setup(){
     cp5.addFrameRate().setPosition(10, 10);
     noStroke();
     
-    GravityWell grav = new GravityWell(width/2, height/2, 3);
+    GravityWell grav = new GravityWell(width/2, height/2, 5);
     particles.add(grav);
     
 }
 
+int num_dynamic_parts;
+
 void draw(){
     
     background(BACKGROUND_COLOR);
+    num_dynamic_parts = 0;
     
     for(Drawable p : particles){
     
         p.step();
         p.draw();
+        
+        if(!(p instanceof StaticParticle)){
+        
+            num_dynamic_parts++;
+            
+            PVector pos = ((Particle)p).pos;
+            int x = int(pos.x);
+            int y = int(pos.y);
+            
+            int vel = int(((Particle)p).vel.mag());
+        
+            if(x < 0 || y < 0 || x > width || y > height){
+            
+                
+                
+                fill(color(255, 0, 0));
+        
+            }else{
+                
+                fill(color(255));
+                
+            }
+            
+            text(String.format("{%d} (%d) [x:%d, y:%d]", num_dynamic_parts, vel, x, y), 15, 30+10*num_dynamic_parts);
+        
+        }
         
         if(VEL_ARROWS && p instanceof DynamicParticle){
         
@@ -48,7 +77,6 @@ void draw(){
         }
         
     }
-    
     
     for(int i = particles.size()-1; i >= 0; i--)
         if(particles.get(i) instanceof Particle)
@@ -97,7 +125,7 @@ interface Drawable{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 abstract class Particle implements Drawable{
 
-    PVector pos;
+    public PVector pos;
     PVector vel;
     color clr;
     float mass;
@@ -198,12 +226,12 @@ class DynamicParticle extends Particle{
         vel.add(accel);
         
         // Limit the velocity of bodies so that they dont go flying at 100 or something
-        vel.limit(10);
+        vel.limit(MAX_VEL);
         
         pos.add(vel);
         
         // Recolor the particle as a function of it's velocity
-        clr = color(int(map(vel.mag(), 0, 10, 0, 255)), 0, int(map(vel.mag(), 0, 10, 255, 0)));
+        clr = color(int(map(vel.mag(), 0, MAX_VEL, 0, 255)), 0, int(map(vel.mag(), 0, MAX_VEL, 255, 0)));
         
         if(ACCL_ARROWS){
         
