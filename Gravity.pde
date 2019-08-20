@@ -19,7 +19,9 @@ final float ACCL_ARROW_MULT = 400;
 
 void setup(){
 
-    size(920, 800);
+    //size(920, 800);
+    fullScreen();
+    textSize(20);
     ControlP5 cp5 = new ControlP5(this);
     cp5.addFrameRate().setPosition(10, 10);
     noStroke();
@@ -49,21 +51,50 @@ void draw(){
             int x = int(pos.x);
             int y = int(pos.y);
             
-            int vel = int(((Particle)p).vel.mag());
+            double vel = ((Particle)p).vel.mag();
         
             if(x < 0 || y < 0 || x > width || y > height){
             
+                fill(color(0, 255, 0));
                 
+                pushMatrix();
                 
+                if(x < 0 && y < 0){
+                    rotate(PI/4);
+                }else if(x < 0 && y > height){
+                    translate(0, height);
+                    rotate(7*PI/4);
+                }else if(x > width && y < 0){
+                    translate(width, 0);
+                    rotate(3*PI/4);
+                }else if(x > width && y > height){
+                    translate(width, height);
+                    rotate(5*PI/4);
+                }else if(x < 0){
+                    translate(0, y);
+                }else if(x > width){
+                    translate(width, y);
+                    rotate(PI);
+                }else if(y < 0){
+                    translate(x, 0);
+                    rotate(PI/2);
+                }else if(y > height){
+                    translate(x, height);
+                    rotate(3*PI/2);
+                }
+                
+                triangle(0, 0, 10, 5, 10, -5);
+                popMatrix();
+        
                 fill(color(255, 0, 0));
         
             }else{
                 
-                fill(color(255));
+                fill(color(0, 255, 0));
                 
             }
             
-            text(String.format("{%d} (%d) [x:%d, y:%d]", num_dynamic_parts, vel, x, y), 15, 30+10*num_dynamic_parts);
+            text(String.format("{%d} (%.1f) [x:%d, y:%d]", num_dynamic_parts, vel, x, y), 15, 30+20*num_dynamic_parts);
         
         }
         
